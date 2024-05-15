@@ -22,15 +22,15 @@ irm "https://github.com/bitsper2nd/powershell-profile/raw/main/setup.ps1" | iex
 ```
 
 The script will also install the following cli tools from Winget:
-- [RipGrep](https://github.com/BurntSushi/ripgrep), A clone of grep.
-- [sd](https://github.com/chmln/sd), A sed alternative.
-- [fd](https://github.com/sharkdp/fd), An alternative to find.
-- [starship](https://github.com/starship/starship), A customizable prompt.
-- [gsudo](https://github.com/gerardog/gsudo), Sudo for Windows.
-- [zoxide](https://github.com/ajeetdsouza/zoxide), A smarter cd command.
-- [bat](https://github.com/sharkdp/bat), A cat clone.
-- [tlrc](https://github.com/tldr-pages/tlrc), Cheatsheets for commands.
-- [lsd](https://github.com/lsd-rs/lsd), The next gen ls command.
+- [RipGrep](https://github.com/BurntSushi/ripgrep) - A clone of grep.
+- [sd](https://github.com/chmln/sd) - A sed alternative.
+- [fd](https://github.com/sharkdp/fd) - An alternative to find.
+- [starship](https://github.com/starship/starship) - A customizable prompt.
+- [gsudo](https://github.com/gerardog/gsudo) - Sudo for Windows.
+- [zoxide](https://github.com/ajeetdsouza/zoxide) - A smarter cd command.
+- [bat](https://github.com/sharkdp/bat) - A cat clone.
+- [tlrc](https://github.com/tldr-pages/tlrc) - Cheatsheets for console commands.
+- [eza](https://github.com/eza-community/eza) - A modern replacement for ls
 
 ## Credits
 

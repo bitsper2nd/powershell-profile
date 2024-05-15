@@ -59,14 +59,14 @@ else {
 
 # Winget Install
 try {
-    winget install -e --id "Starship.Starship" && "ajeetdsouza.zoxide" && "gerardog.gsudo" && "lsd-rs.lsd" && "BurntSushi.ripgrep.MSVC" && "Git.MinGit" && "sharkdp.bat" && "sharkdp.fd" && "chmln.sd" && "tldr-pages.tlrc"
+    winget install --id=Starship.Starship && winget install --id=ajeetdsouza.zoxide && winget install --id=gerardog.gsudo && winget install --id=eza-community.eza && winget install --id=BurntSushi.ripgrep.GNU && winget install --id=Git.MinGit && winget install --id=sharkdp.bat && winget install --id=sharkdp.fd && winget install --id=chmln.sd && winget install --id=tldr-pages.tlrc
 }
 catch {
     Write-Error "Failed to install Command Line tools. Error: $_"
 }
 
 # Final check and message to the user
-if ((Test-Path -Path $PROFILE) -and (winget list --id "Starship.Starship" && "ajeetdsouza.zoxide" && "gerardog.gsudo" && "lsd-rs.lsd" && "BurntSushi.ripgrep.MSVC" && "Git.MinGit" && "sharkdp.bat" && "sharkdp.fd" && "chmln.sd" && "tldr-pages.tlrc")) {
+if ((Test-Path -Path $PROFILE) -and (winget list --id "Starship.Starship" && "ajeetdsouza.zoxide" && "gerardog.gsudo" && "eza-community.eza" && "BurntSushi.ripgrep.GNU" && "Git.MinGit" && "sharkdp.bat" && "sharkdp.fd" && "chmln.sd" && "tldr-pages.tlrc")) {
     Write-Host "Setup completed successfully. Please restart your PowerShell session to apply changes."
 } else {
     Write-Warning "Setup completed with errors. Please check the error messages above."
