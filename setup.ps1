@@ -21,6 +21,14 @@ if (-not (Test-InternetConnection)) {
     break
 }
 
+# Install Powershell Core
+try {
+    winget install --id=Microsoft.PowerShell
+}
+catch {
+    Write-Error "Failed to install Powershell Core. Error: $_"
+}
+
 # Profile creation or update
 if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
     try {
@@ -28,9 +36,6 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
         $profilePath = ""
         if ($PSVersionTable.PSEdition -eq "Core") { 
             $profilePath = "$env:userprofile\Documents\Powershell"
-        }
-        elseif ($PSVersionTable.PSEdition -eq "Desktop") {
-            $profilePath = "$env:userprofile\Documents\WindowsPowerShell"
         }
 
         if (!(Test-Path -Path $profilePath)) {
@@ -57,7 +62,7 @@ else {
     }
 }
 
-# Winget Install
+# Install Command Line tools
 try {
     winget install --id=Starship.Starship && winget install --id=ajeetdsouza.zoxide && winget install --id=gerardog.gsudo && winget install --id=eza-community.eza && winget install --id=BurntSushi.ripgrep.GNU && winget install --id=Git.MinGit && winget install --id=sharkdp.bat && winget install --id=sharkdp.fd && winget install --id=chmln.sd && winget install --id=tldr-pages.tlrc
 }

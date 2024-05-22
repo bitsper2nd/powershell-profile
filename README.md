@@ -30,7 +30,7 @@ The script will also install the following cli tools from Winget:
 - [zoxide](https://github.com/ajeetdsouza/zoxide) - A smarter cd command.
 - [bat](https://github.com/sharkdp/bat) - A cat clone.
 - [tlrc](https://github.com/tldr-pages/tlrc) - Cheatsheets for console commands.
-- [eza](https://github.com/eza-community/eza) - A modern replacement for ls
+- [eza](https://github.com/eza-community/eza) - A modern replacement for ls.
 
 ## Credits
 
