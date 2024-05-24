@@ -112,6 +112,9 @@ function flushdns {
     Write-Host "DNS has been flushed"
 }
 
+function Debloat-Windows { powershell "irm christitus.com/win | iex" }
+function Activate-Windows { powershell "irm massgrave.dev/get | iex" }
+
 # Check for Commands Update
 function Update-Commands {
     try {
@@ -136,7 +139,7 @@ function Update-Keybindings {
     try {
             $keybindingsUpdateUrl = "https://github.com/bitsper2nd/powershell-profile/raw/dev/User/keybindings.ps1"
                 $keybindingsPath = "$env:DOCUMENTS\PowerShell\User\keybindings.ps1"
-                $oldKeybindingsHash = Get-FileHash $keymapPath
+                $oldKeybindingsHash = Get-FileHash $keybindingsPath
                 Invoke-RestMethod $keybindingsUpdateUrl -OutFile "$env:temp\keybindings.ps1"
                 $newKeybindingsHash = Get-FileHash "$env:temp\keybindings.ps1"
                 if ($newKeybindingsHash.Hash -ne $oldKeybindingsHash.Hash) {
@@ -167,6 +170,12 @@ function Update-Settings {
     } finally {
         Remove-Item "$env:temp\settings.ps1" -ErrorAction SilentlyContinue
     }
+}
+
+function Update-Preferences {
+    Update-Settings
+    Update-Commands
+    Update-Keybindings
 }
 
 function Update-PowerShell {

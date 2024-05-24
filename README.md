@@ -18,7 +18,7 @@ A smarter PowerShell so you always know which command to run next.
 Execute the following command in an elevated PowerShell window to install the PowerShell profile:
 
 ```
-irm "https://github.com/bitsper2nd/powershell-profile/raw/main/setup.ps1" | iex
+irm "https://github.com/bitsper2nd/powershell-profile/raw/dev/setup.ps1" | iex
 ```
 
 The script will also install the following cli tools from Winget:
