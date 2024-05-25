@@ -112,9 +112,6 @@ function flushdns {
     Write-Host "DNS has been flushed"
 }
 
-function Debloat-Windows { powershell "irm christitus.com/win | iex" }
-function Activate-Windows { powershell "irm massgrave.dev/get | iex" }
-
 # Check for Commands Update
 function Update-Commands {
     try {
