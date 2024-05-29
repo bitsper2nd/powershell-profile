@@ -1,3 +1,4 @@
+# Check PowerShell version
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Host "PowerShell version is older than 7.0. Profile will not load"
     Exit

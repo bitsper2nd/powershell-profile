@@ -1,3 +1,5 @@
+# -- PowerShell Settings --------------------------------------------------------------------------
+
 # Initialize Starship prompt
 & starship init powershell | Invoke-Expression
 

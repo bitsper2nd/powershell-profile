@@ -1,8 +1,13 @@
-# Utility Functions
-function Test-CommandExists {
-    param($command)
-    $exists = $null -ne (Get-Command $command -ErrorAction SilentlyContinue)
-    return $exists
+# -- PowerShell Commands --------------------------------------------------------------------------
+
+# Editor Aliases
+Function Test-CommandExists {
+    Param ($command)
+    $oldPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    try { if (Get-Command $command) { RETURN $true } }
+    Catch { Write-Host "$command does not exist"; RETURN $false }
+    Finally { $ErrorActionPreference = $oldPreference }
 }
 
 # Editor Configuration
@@ -15,12 +20,15 @@ $EDITOR = if (Test-CommandExists nvim) { 'nvim' }
           elseif (Test-CommandExists sublime_text) { 'sublime_text' }
           else { 'notepad' }
 Set-Alias -Name vim -Value $EDITOR
+Set-Alias subl sublime_text
 
 # Quick Access to Editing the Profile
 function Edit-Profile { vim $PROFILE }
 function Reload-Profile {
     & $profile
 }
+
+# -- File Aliases --------------------------------------------------------------------------
 
 # Create file
 function touch($file) { "" | Out-File $file -Encoding ASCII }
@@ -30,30 +38,47 @@ function ff($name) {
     }
 }
 
-# Network Utilities
-function Get-IP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
+function unzip {
+    param (
+        [Parameter(Mandatory = $true)]
+        $File
+    )
 
-# System Utilities
-function uptime {
-    if ($PSVersionTable.PSVersion.Major -eq 5) {
-        Get-WmiObject win32_operatingsystem | Select-Object @{Name='LastBootUpTime'; Expression={$_.ConverttoDateTime($_.lastbootuptime)}} | Format-Table -HideTableHeaders
-    } else {
-        net statistics workstation | Select-String "since" | ForEach-Object { $_.ToString().Replace('Statistics since ', '') }
+    $DestinationPath = Split-Path -Path $file
+    if ([string]::IsNullOrEmpty($DestinationPath)) {
+
+        $DestinationPath=$PWD
     }
+
+    if (Test-Path ($File)) {
+
+        Write-Output "Extracting $File to $DestinationPath"
+        Expand-Archive -Path $File -DestinationPath $DestinationPath
+
+    }else {
+        $FileName=Split-Path $File -leaf
+        Write-Output "File $FileName does not exist"
+    }
+
 }
 
-function unzip ($file) {
-    Write-Output("Extracting", $file, "to", $pwd)
-    $fullFile = Get-ChildItem -Path $pwd -Filter $file | ForEach-Object { $_.FullName }
-    Expand-Archive -Path $fullFile -DestinationPath $pwd
-}
+function md5 { Get-FileHash -Algorithm MD5 $args }
+function sha1 { Get-FileHash -Algorithm SHA1 $args }
+function sha256 { Get-FileHash -Algorithm SHA256 $args }
+function expl { explorer . }
 
-function grep($regex, $dir) {
-    if ( $dir ) {
-        Get-ChildItem $dir | select-string $regex
-        return
+function grep {
+    param (
+        [string]$regex,
+        [string]$dir
+    )
+    process {
+        if ($dir) {
+            Get-ChildItem -Path $dir -Recurse -File | Select-String -Pattern $regex
+        } else {     # Use if piped input is provided
+            $input | Select-String -Pattern $regex
+        }
     }
-    $input | select-string $regex
 }
 
 function df {
@@ -90,6 +115,14 @@ function tail {
   Get-Content $Path -Tail $n -Wait:$f
 }
 
+function dirs {
+    if ($args.Count -gt 0) {
+        Get-ChildItem -Recurse -Include "$args" | Foreach-Object FullName
+    } else {
+        Get-ChildItem -Recurse | Foreach-Object FullName
+    }
+}
+
 # Quick File Creation
 function nf { param($name) New-Item -ItemType "file" -Path . -Name $name }
 
@@ -103,6 +136,52 @@ function k9 { Stop-Process -Name $args[0] }
 function la { Get-ChildItem -Path . -Force | Format-Table -AutoSize }
 function ll { Get-ChildItem -Path . -Force -Hidden | Format-Table -AutoSize }
 
+# SSH key
+function ssh-copy-key {
+    param(
+        [parameter(Position=0)]
+        [string]$user,
+
+        [parameter(Position=1)]
+        [string]$ip
+    )
+    $pubKeyPath = "~\.ssh\id_ed25519.pub"
+    $sshCommand = "cat $pubKeyPath | ssh $user@$ip 'cat >> ~/.ssh/authorized_keys'"
+    Invoke-Expression $sshCommand
+}
+
+# -- Git Aliases --------------------------------------------------------------------------
+
+function gs { git status }
+
+function ga { git add . }
+
+function gc { param($m) git commit -m "$m" }
+
+function gp { git push }
+
+function gcl { git clone "$args" }
+
+function gcom {
+    git add .
+    git commit -m "$args"
+}
+function lazyg {
+    git add .
+    git commit -m "$args"
+    git push
+}
+
+# -- System --------------------------------------------------------------------------
+
+function uptime {
+    if ($PSVersionTable.PSVersion.Major -eq 5) {
+        Get-WmiObject win32_operatingsystem | Select-Object @{Name='LastBootUpTime'; Expression={$_.ConverttoDateTime($_.lastbootuptime)}} | Format-Table -HideTableHeaders
+    } else {
+        net statistics workstation | Select-String "since" | ForEach-Object { $_.ToString().Replace('Statistics since ', '') }
+    }
+}
+
 # Quick Access to System Information
 function sysinfo { Get-ComputerInfo }
 
@@ -111,6 +190,19 @@ function flushdns {
     Clear-DnsClientCache
     Write-Host "DNS has been flushed"
 }
+function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
+
+# Aliases for reboot and poweroff
+function Reboot-System {
+    Restart-Computer -Force
+    Set-Alias reboot Reboot-System
+}
+function Poweroff-System {
+    Stop-Computer -Force
+    Set-Alias poweroff Poweroff-System
+}
+
+# -- Updater --------------------------------------------------------------------------
 
 # Check for Commands Update
 function Update-Commands {
@@ -175,6 +267,7 @@ function Update-Preferences {
     Update-Keybindings
 }
 
+# Check for PowerShell Update
 function Update-PowerShell {
     try {
         Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
