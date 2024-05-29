@@ -1,6 +1,6 @@
 # Ensure the script can run with elevated privileges
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Write-Warning "Please run this script as an Administrator!"
+    Write-Warning "⚠️ Please run this script as an Administrator!"
     break
 }
 
@@ -11,7 +11,7 @@ function Test-InternetConnection {
         return $true
     }
     catch {
-        Write-Warning "Internet connection is required but not available. Please check your connection."
+        Write-Warning "❌ Internet connection is required but not available. Please check your connection."
         return $false
     }
 }
@@ -22,20 +22,20 @@ if (-not (Test-InternetConnection)) {
 }
 
 # Install PowerShell Core
-$confirmation = Read-Host "Do you want to install PowerShell Core? (Y/N)"
+$confirmation = Read-Host "💭 Do you want to install PowerShell Core? (Y/N)"
 if ($confirmation -eq 'Y' -or $confirmation -eq 'y') {
     try {
         winget install --id=Microsoft.PowerShell
-        Write-Host "PowerShell Core installation initiated." -ForegroundColor Green
+        Write-Host "🟢 PowerShell Core installation initiated." -ForegroundColor Green
     } catch {
-        Write-Error "Failed to install PowerShell Core. Error: $_"
+        Write-Error "❌ Failed to install PowerShell Core. Error: $_"
     }
 } else {
-    Write-Host "PowerShell Core installation aborted." -ForegroundColor Yellow
+    Write-Host "⛔ PowerShell Core installation aborted." -ForegroundColor Yellow
 }
 
 # Prompt user for confirmation
-$confirmation = Read-Host "Do you want to create or update your PowerShell profile, settings, commands, and keybindings? (Y/N)"
+$confirmation = Read-Host "💭 Do you want to create or update your PowerShell profile, settings, commands, and keybindings? (Y/N)"
 if ($confirmation -eq 'Y' -or $confirmation -eq 'y') {
     try {
         # Profile creation or update
@@ -52,13 +52,13 @@ if ($confirmation -eq 'Y' -or $confirmation -eq 'y') {
             }
 
             Invoke-RestMethod https://github.com/bitsper2nd/powershell-profile/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
-            Write-Host "The profile @ [$PROFILE] has been created."
-            Write-Host "If you want to add any persistent components, please do so at [$profilePath\Profile.ps1] as there is an updater in the installed profile which uses the hash to update the profile and will lead to loss of changes"
+            Write-Host "✅ The profile @ [$PROFILE] has been created."
+            Write-Host "💡 If you want to add any persistent components, please do so at [$profilePath\Profile.ps1] as there is an updater in the installed profile which uses the hash to update the profile and will lead to loss of changes"
         } else {
             Get-Item -Path $PROFILE | Move-Item -Destination "oldprofile.ps1" -Force
             Invoke-RestMethod https://github.com/ShadowElixir/better-powershell-profile/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
-            Write-Host "The profile @ [$PROFILE] has been updated and old profile backed up."
-            Write-Host "Please back up any persistent components of your old profile to [$HOME\Documents\PowerShell\Profile.ps1] as there is an updater in the installed profile which uses the hash to update the profile and will lead to loss of changes"
+            Write-Host "✅ The profile @ [$PROFILE] has been updated and old profile backed up."
+            Write-Host "💡 Please back up any persistent components of your old profile to [$HOME\Documents\PowerShell\Profile.ps1] as there is an updater in the installed profile which uses the hash to update the profile and will lead to loss of changes"
         }
 
         # Create or update settings.ps1, commands.ps1, and keybindings.ps1
@@ -76,25 +76,25 @@ if ($confirmation -eq 'Y' -or $confirmation -eq 'y') {
 
                 if ($null -eq $oldHash -or $newHash.Hash -ne $oldHash.Hash) {
                     Copy-Item -Path "$env:temp\$($preference.FileType).ps1" -Destination $preference.FilePath -Force
-                    Write-Host "$($preference.FileType) file has been updated." -ForegroundColor Magenta
+                    Write-Host "✅ $($preference.FileType) file has been updated." -ForegroundColor Magenta
                 } else {
-                    Write-Host "$($preference.FileType) file is already up to date." -ForegroundColor Green
+                    Write-Host "✅ $($preference.FileType) file is already up to date." -ForegroundColor Green
                 }
             } catch {
-                Write-Error "Unable to check for $($preference.FileType) update"
+                Write-Error "❌ Unable to check for $($preference.FileType) update"
             } finally {
                 Remove-Item "$env:temp\$($preference.FileType).ps1" -ErrorAction SilentlyContinue
             }
         }
     } catch {
-        Write-Error "Failed to create or update the profile or preferences. Error: $_"
+        Write-Error "❌ Failed to create or update the profile or preferences. Error: $_"
     }
 } else {
-    Write-Host "Operation aborted by the user." -ForegroundColor Yellow
+    Write-Host "⛔ Operation aborted by the user." -ForegroundColor Yellow
 }
 
 # Install Command Line tools
-$confirmation = Read-Host "Do you want to install Command Line tools? (Y/N)"
+$confirmation = Read-Host "💭 Do you want to install Command Line tools? (Y/N)"
 if ($confirmation -eq 'Y' -or $confirmation -eq 'y') {
     try {
         winget install --id=Starship.Starship &&
@@ -107,10 +107,10 @@ if ($confirmation -eq 'Y' -or $confirmation -eq 'y') {
         winget install --id=sharkdp.fd &&
         winget install --id=chmln.sd &&
         winget install --id=tldr-pages.tlrc
-        Write-Host "Command Line tools installation initiated." -ForegroundColor Green
+        Write-Host "🟢 Command Line tools installation initiated." -ForegroundColor Green
     } catch {
-        Write-Error "Failed to install Command Line tools. Error: $_"
+        Write-Error "❌ Failed to install Command Line tools. Error: $_"
     }
 } else {
-    Write-Host "Command Line tools installation aborted." -ForegroundColor Yellow
+    Write-Host "⛔ Command Line tools installation aborted." -ForegroundColor Yellow
 }

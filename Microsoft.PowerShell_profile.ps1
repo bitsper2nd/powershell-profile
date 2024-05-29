@@ -1,6 +1,6 @@
 # Check PowerShell version
 if ($PSVersionTable.PSVersion.Major -lt 7) {
-    Write-Host "PowerShell version is older than 7.0. Profile will not load"
+    Write-Host "⚠️ PowerShell version is older than 7.0. Profile will not load"
     Exit
 }
 
@@ -16,7 +16,7 @@ $userPreferences = @(
 foreach ($module in $userPreferences) {
     if (-not (Test-Path -Path $module)) {
         New-Item -Path $module -ItemType File
-        Write-Output "Created new file: $module"
+        Write-Output "✅ Created new file: $module"
     } else {
         . $module
     }
