@@ -4,65 +4,105 @@
 function Update-Commands {
     try {
         $commandsUpdateUrl = "https://github.com/bitsper2nd/powershell-profile/raw/dev/User/commands.ps1"
-        $commandsPath = "$env:DOCUMENTS\PowerShell\User\commands.ps1"
-        $oldCommandsHash = Get-FileHash $commandsPath
-        Invoke-RestMethod $commandsUpdateUrl -OutFile "$env:temp\commands.ps1"
-        $newCommandsHash = Get-FileHash "$env:temp\commands.ps1"
-        if ($newCommandsHash.Hash -ne $oldCommandsHash.Hash) {
-            Copy-Item -Path "$env:temp\commands.ps1" -Destination $commandsPath -Force
+        $commandsPath = Join-Path -Path $env:USERPROFILE -ChildPath "Documents\PowerShell\User\commands.ps1"
+        $tempCommandsPath = Join-Path -Path $env:TEMP -ChildPath "commands.ps1"
+
+        # Check if the old commands file exists
+        if (Test-Path $commandsPath) {
+            $oldCommandsHash = Get-FileHash $commandsPath
+        } else {
+            $oldCommandsHash = $null
+        }
+
+        Invoke-RestMethod $commandsUpdateUrl -OutFile $tempCommandsPath
+        $newCommandsHash = Get-FileHash $tempCommandsPath
+
+        if ($oldCommandsHash -eq $null -or $newCommandsHash.Hash -ne $oldCommandsHash.Hash) {
+            Copy-Item -Path $tempCommandsPath -Destination $commandsPath -Force
             Write-Host "Commands file has been updated." -ForegroundColor Magenta
+        } else {
+            Write-Host "Commands file is already up-to-date." -ForegroundColor Green
         }
     } catch {
-        Write-Error "Unable to check for commands update"
+        Write-Error "Unable to check for commands update: $_"
     } finally {
-        Remove-Item "$env:temp\commands.ps1" -ErrorAction SilentlyContinue
+        Remove-Item $tempCommandsPath -ErrorAction SilentlyContinue
     }
 }
 
 # Check for Keybindings Update
 function Update-Keybindings {
     try {
-            $keybindingsUpdateUrl = "https://github.com/bitsper2nd/powershell-profile/raw/dev/User/keybindings.ps1"
-                $keybindingsPath = "$env:DOCUMENTS\PowerShell\User\keybindings.ps1"
-                $oldKeybindingsHash = Get-FileHash $keybindingsPath
-                Invoke-RestMethod $keybindingsUpdateUrl -OutFile "$env:temp\keybindings.ps1"
-                $newKeybindingsHash = Get-FileHash "$env:temp\keybindings.ps1"
-                if ($newKeybindingsHash.Hash -ne $oldKeybindingsHash.Hash) {
-                    Copy-Item -Path "$env:temp\keybindings.ps1" -Destination $keybindingsPath -Force
-                    Write-Host "keybindings file has been updated." -ForegroundColor Magenta
-                }
-            } catch {
-                Write-Error "Unable to check for keybindings update"
-            } finally {
-                Remove-Item "$env:temp\keybindings.ps1" -ErrorAction SilentlyContinue
-            }
+        $keybindingsUpdateUrl = "https://github.com/bitsper2nd/powershell-profile/raw/dev/User/keybindings.ps1"
+        $keybindingsPath = Join-Path -Path $env:USERPROFILE -ChildPath "Documents\PowerShell\User\keybindings.ps1"
+        $tempKeybindingsPath = Join-Path -Path $env:TEMP -ChildPath "keybindings.ps1"
+
+        # Check if the old keybindings file exists
+        if (Test-Path $keybindingsPath) {
+            $oldKeybindingsHash = Get-FileHash $keybindingsPath
+        } else {
+            $oldKeybindingsHash = $null
         }
+
+        Invoke-RestMethod $keybindingsUpdateUrl -OutFile $tempKeybindingsPath
+        $newKeybindingsHash = Get-FileHash $tempKeybindingsPath
+
+        if ($oldKeybindingsHash -eq $null -or $newKeybindingsHash.Hash -ne $oldKeybindingsHash.Hash) {
+            Copy-Item -Path $tempKeybindingsPath -Destination $keybindingsPath -Force
+            Write-Host "Keybindings file has been updated." -ForegroundColor Magenta
+        } else {
+            Write-Host "Keybindings file is already up-to-date." -ForegroundColor Green
+        }
+    } catch {
+        Write-Error "Unable to check for keybindings update: $_"
+    } finally {
+        Remove-Item $tempKeybindingsPath -ErrorAction SilentlyContinue
+    }
+}
 
 # Check for Settings Update
 function Update-Settings {
     try {
         $settingsUpdateUrl = "https://github.com/bitsper2nd/powershell-profile/raw/dev/User/settings.ps1"
-        $settingsPath = "$env:DOCUMENTS\PowerShell\User\settings.ps1"
-        $oldSettingsHash = Get-FileHash $SettingsPath
-        Invoke-RestMethod $settingsUpdateUrl -OutFile "$env:temp\settings.ps1"
-        $newSettingsHash = Get-FileHash "$env:temp\settings.ps1"
-        if ($newSettingsHash.Hash -ne $oldSettingsHash.Hash) {
-            Copy-Item -Path "$env:temp\settings.ps1" -Destination $SettingsPath -Force
+        $settingsPath = Join-Path -Path $env:USERPROFILE -ChildPath "Documents\PowerShell\User\settings.ps1"
+        $tempSettingsPath = Join-Path -Path $env:TEMP -ChildPath "settings.ps1"
+
+        # Check if the old settings file exists
+        if (Test-Path $settingsPath) {
+            $oldSettingsHash = Get-FileHash $settingsPath
+        } else {
+            $oldSettingsHash = $null
+        }
+
+        Invoke-RestMethod $settingsUpdateUrl -OutFile $tempSettingsPath
+        $newSettingsHash = Get-FileHash $tempSettingsPath
+
+        if ($oldSettingsHash -eq $null -or $newSettingsHash.Hash -ne $oldSettingsHash.Hash) {
+            Copy-Item -Path $tempSettingsPath -Destination $settingsPath -Force
             Write-Host "Settings file has been updated." -ForegroundColor Magenta
+        } else {
+            Write-Host "Settings file is already up-to-date." -ForegroundColor Green
         }
     } catch {
-        Write-Error "Unable to check for Settings update"
+        Write-Error "Unable to check for Settings update: $_"
     } finally {
-        Remove-Item "$env:temp\settings.ps1" -ErrorAction SilentlyContinue
+        Remove-Item $tempSettingsPath -ErrorAction SilentlyContinue
     }
 }
 
+# Check for Preferences Update
 function Update-Preferences {
     $confirmation = Read-Host "💭 Do you want to update preferences? (Y/N)"
     if ($confirmation -eq 'Y' -or $confirmation -eq 'y') {
-    Update-Settings
-    Update-Commands
-    Update-Keybindings
+        try {
+            Update-Settings
+            Update-Commands
+            Update-Keybindings
+            Write-Host "Preferences update succeeded." -ForegroundColor Green
+        } catch {
+            Write-Error "Unable to update preferences: $_"
+            Write-Host "Preferences update failed." -ForegroundColor Red
+        }
     }
 }
 
