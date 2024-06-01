@@ -1,46 +1,5 @@
 # -- PowerShell Commands --------------------------------------------------------------------------
 
-function Test-CommandExists {
-    Param ($command)
-    $oldPreference = $ErrorActionPreference
-    $ErrorActionPreference = 'SilentlyContinue'
-    try { if (Get-Command $command) { RETURN $true } }
-    Catch { Write-Host "$command does not exist"; RETURN $false }
-    Finally { $ErrorActionPreference = $oldPreference }
-}
-
-# -- System --------------------------------------------------------------------------
-
-function uptime {
-    if ($PSVersionTable.PSVersion.Major -eq 5) {
-        Get-WmiObject win32_operatingsystem | Select-Object @{Name='LastBootUpTime'; Expression={$_.ConverttoDateTime($_.lastbootuptime)}} | Format-Table -HideTableHeaders
-    } else {
-        net statistics workstation | Select-String "since" | ForEach-Object { $_.ToString().Replace('Statistics since ', '') }
-    }
-}
-
-# Quick Access to System Information
-function sysinfo { Get-ComputerInfo }
-
-# Networking Utilities
-function flushdns {
-    Clear-DnsClientCache
-    Write-Host "DNS has been flushed"
-}
-function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
-
-# Aliases for reboot and poweroff
-function Reboot-System {
-    Restart-Computer -Force
-    Set-Alias reboot Reboot-System
-}
-function Poweroff-System {
-    Stop-Computer -Force
-    Set-Alias poweroff Poweroff-System
-}
-
-# -- Updater --------------------------------------------------------------------------
-
 # Check for Commands Update
 function Update-Commands {
     try {
