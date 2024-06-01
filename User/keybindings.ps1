@@ -3,18 +3,6 @@
 using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 
-# Toggle between ListView and InlineView
-function Toggle-PredictionViewStyle {
-    $currentStyle = (Get-PSReadLineOption).PredictionViewStyle
-
-    if ($currentStyle -eq 'ListView') {
-        Set-PSReadLineOption -PredictionViewStyle InlineView
-    } else {
-        Set-PSReadLineOption -PredictionViewStyle ListView
-    }
-}
-Set-PSReadLineKeyHandler -Key Ctrl+spacebar -ScriptBlock { Toggle-PredictionViewStyle }
-
 # Search for commands with up/down arrow
 Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
@@ -35,6 +23,22 @@ Set-PSReadLineKeyHandler -Key RightArrow `
     }
     else {
         [Microsoft.PowerShell.PSConsoleReadLine]::AcceptNextSuggestionWord($key, $arg)
+    }
+}
+
+# Toggle between ListView and InlineView
+Set-PSReadLineKeyHandler -Key Ctrl+spacebar `
+-BriefDescription TogglePredictionViewStyle `
+-LongDescription "Toggle between InlineView and ListView" `
+-ScriptBlock {
+    param($key, $arg)
+
+    $currentStyle = (Get-PSReadLineOption).PredictionViewStyle
+
+    if ($currentStyle -eq 'ListView') {
+        Set-PSReadLineOption -PredictionViewStyle InlineView
+    } else {
+        Set-PSReadLineOption -PredictionViewStyle ListView
     }
 }
 

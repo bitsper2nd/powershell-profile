@@ -26,7 +26,6 @@ The script will also install the following cli tools from Winget:
 - [sd](https://github.com/chmln/sd) - A sed alternative.
 - [fd](https://github.com/sharkdp/fd) - An alternative to find.
 - [starship](https://github.com/starship/starship) - A customizable prompt.
-- [gsudo](https://github.com/gerardog/gsudo) - Sudo for Windows.
 - [zoxide](https://github.com/ajeetdsouza/zoxide) - A smarter cd command.
 - [bat](https://github.com/sharkdp/bat) - A cat clone.
 - [tlrc](https://github.com/tldr-pages/tlrc) - Cheatsheets for console commands.
